@@ -4,8 +4,9 @@
  * So:
  * ```html
  * <body>
+ * <!-- other tags -->
  *  <root>
- *  ... scene will load here ...
+ *  ... scene will load/unload here ...
  *  </root>
  * </body>
  * ```
