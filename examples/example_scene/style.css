@@ -1,0 +1,14 @@
+#example_parent {
+    width: 100%;
+    height: 100%;
+
+    display: flex;
+
+    justify-content: center;
+    align-items: center;
+}
+#example_element {
+    color: rgb(0, 166, 255);
+    font-weight: bold;
+    font-family: "Arial";
+}

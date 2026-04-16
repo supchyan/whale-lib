@@ -1,0 +1,22 @@
+<!DOCTYPE html>
+<head>
+    <link rel="icon" href="/">
+</head>
+
+<body></body>
+
+<!-- connect whale-lib scripts -->
+<script src="../scene_system.js"></script>
+<script src="../scene_loader.js"></script>
+
+<script>
+    // initialize default settings
+    SceneSystem.init();
+    // enable debug log for scene loader
+    SceneLoader.debug();
+    // load the `example_scene` (path to scene directory)
+    SceneLoader.load("example_scene");
+
+    // unload the scene after 4000 ticks
+    setTimeout(() => { SceneLoader.unload(); }, 4000);
+</script>
