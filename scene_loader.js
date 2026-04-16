@@ -4,10 +4,11 @@
  * So:
  * ```html
  * <body>
- * <!-- other tags -->
+ *  <!-- other tags -->
  *  <root>
  *  ... scene will load/unload here ...
  *  </root>
+ *  <!-- other tags -->
  * </body>
  * ```
  */
