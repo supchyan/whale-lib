@@ -1,7 +1,8 @@
 /**
  * Manages scene loading process.
- * Usage: Create `<root></root>` in your `index.html` to make this loader work.
- * So:
+ * 
+ * Create `<root></root>` in your `index.html` to make this loader work.
+ * 
  * ```html
  * <body>
  *  <!-- other tags -->
@@ -11,6 +12,12 @@
  *  <!-- other tags -->
  * </body>
  * ```
+ * 
+ * Then call `load("path/to/scene_folder")` to load the scene.
+ * 
+ * To unload the scene call `unload()`.
+ * 
+ * To get scene name call `get_scene()`.
  */
 class SceneLoader {
     /**
