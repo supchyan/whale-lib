@@ -7,4 +7,22 @@ My general-purpose frontend library for web applications.
 ### Usage
 Clone [whalelib.js](./whalelib.js) to `public` directory of your project so it can be used on client side.
 
-[pseudo_public](./pseudo_public) folder is just an example of common usage of the lib. Sufficient amount of docs can be found there.
+Check [pseudo_public](./pseudo_public) folder as an example of common usage of this lib.
+
+### Vision
+I see the web-development process as self-contained scenes with a bunch of stuff including scripts/resources/styles and etc.
+
+My general frontend is usually `/root/` folder with sub-folders, which are scenes. Scenes store everything they need to work independently in frontend, so there is a main goal. Deleting a scene folder means you won't break anything beyond it. So I really like this kind of implementation.
+
+Average scene folder have to include:
+```
+.../root/scene_folder/
+  > index.html
+  > script.js
+```
+
+`index.html` - a main layout file, so it will be loaded as [innerHtml](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML).
+
+`script.js` - a main script file, so the lib will attempt to evaluate it upon the scene loading process. If you want to use several scripts at the same time, you need to invoke their methods inside this file and add their source reference into `index.html` as `<script src>`. I prefer use js classes to do a trick.
+
+You can use `.css` files as well, but you need to `<link>` them in `index.html` file.
