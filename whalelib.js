@@ -1,4 +1,23 @@
 /**
+ * Contains methods related to javascript execution.
+ */
+class SceneInvoker {
+    /**
+     * Evaluates javascript code by path specified.
+     */
+    static invoke(path_to_script) {
+        fetch(`${SceneLoader.getCurrentScene()}${path_to_script}`).then(res => {
+            if (!res.ok) {
+                return;
+            }
+
+            res.text().then(code => {
+                eval(code);
+            });
+        });
+    }
+}
+/**
  * Contains methods related to system features of the lib, such as scene layout initialization.
  */
 class SceneSystem {
@@ -40,7 +59,7 @@ class SceneSystem {
  * 
  * To get scene name call `SceneLoader.get_scene()`.
  */
-class SceneLoader {   
+class SceneLoader {
     /**
      * Flag of whenever debug messages is allowed for a `SceneLoader`.
      */
@@ -93,7 +112,7 @@ class SceneLoader {
     /** 
      * Call this to enable debug console to handle whenever scene is loaded/unloaded. 
      */
-    static debug() {
+    static enableDebug() {
         this.#is_debug_enabled = true;
     }
 
@@ -104,6 +123,11 @@ class SceneLoader {
     static load(scene_path) {
         if (!this.#get_root()) {
             return console.error(this.#root_err_msg());
+        }
+
+        // remove "/" as a last char if exists
+        if (scene_path.endsWith("/")) {
+            scene_path = scene_path.substring(0, scene_path.length - 1);
         }
 
         this.#current_scene = scene_path;
@@ -120,7 +144,7 @@ class SceneLoader {
                 this.#get_root().innerHTML = content;
                 this.#debug_message(this.#html_loaded_msg(this.#current_scene));
 
-                // exec js
+                // execute javascript
                 fetch(`${scene_path}/script.js`).then(res => {
                     if (!res.ok) {
                         this.#debug_message(this.#js_load_err_msg(this.#current_scene));
@@ -159,7 +183,7 @@ class SceneLoader {
      * 
      * You can use this method to handle loops in scene's javascript.
      */
-    static get_current_scene() {
+    static getCurrentScene() {
         return this.#current_scene;
     }
 }

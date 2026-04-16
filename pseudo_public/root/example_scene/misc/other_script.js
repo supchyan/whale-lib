@@ -1,0 +1,1 @@
+document.getElementById("example_element").innerText = "Example whale 🐳";

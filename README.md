@@ -23,6 +23,6 @@ Average scene folder have to include:
 
 `index.html` - a main layout file, so it will be loaded as [innerHtml](https://developer.mozilla.org/en-US/docs/Web/API/Element/innerHTML).
 
-`script.js` - a main script file, so the lib will attempt to evaluate it upon the scene loading process. If you want to use several scripts at the same time, you need to invoke their methods inside this file and add their source reference into `index.html` as `<script src>`. I prefer use js classes to do a trick.
+`script.js` - a main script file, so the lib will attempt to evaluate it upon the scene loading process.
 
 You can use `.css` files as well, but you need to `<link>` them in `index.html` file.
