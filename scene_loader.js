@@ -13,11 +13,11 @@
  * </body>
  * ```
  * 
- * Then call `load("path/to/scene_folder")` to load the scene.
+ * To load the scene call `SceneLoader.load("path/to/scene_folder")`;
  * 
- * To unload the scene call `unload()`.
+ * To unload the scene call `SceneLoader.unload()`;
  * 
- * To get scene name call `get_scene()`.
+ * To get scene name call `SceneLoader.get_scene()`.
  */
 class SceneLoader {
     /**
