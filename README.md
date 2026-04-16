@@ -5,6 +5,6 @@ My general-purpose frontend library for web applications.
 ```
 
 ### Usage
-Clone `whalelib.js` to `public` directory of your project so it can be used on client side.
+Clone [whalelib.js](./whalelib.js) to `public` directory of your project so it can be used on client side.
 
-`pseudo_public` folder is just an example of common usage of the lib. Sufficient amount of docs can be found there.
+[pseudo_public](./pseudo_public) folder is just an example of common usage of the lib. Sufficient amount of docs can be found there.
