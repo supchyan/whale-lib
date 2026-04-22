@@ -32,9 +32,9 @@
     const otherContainer    = new SceneStorage(document.getElementById("otherContainer"));
 
     // load scene content using this
-    exampleContainer.loadScene("./scns/example_scene");
-    otherContainer.loadScene("./scns/other_scene");
+    exampleContainer.load("./scns/example_scene");
+    otherContainer.load("./scns/other_scene");
 
     // unload scene after a while
-    setTimeout(() => { exampleContainer.unloadScene() }, 4000);
+    setTimeout(() => { exampleContainer.clear() }, 4000);
 </script>

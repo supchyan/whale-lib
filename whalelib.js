@@ -62,7 +62,7 @@ class SceneStorage {
     }
 
     /**
-     * True whenever scene is loaded;
+     * `true` whenever `SceneStorage` is empty.
      */
     isEmpty() {
         return this._parent.innerHTML == "";
@@ -72,7 +72,7 @@ class SceneStorage {
      * Loads scene content by `scenePath` specified.
      * @param {*} scenePath path to scene directory.
      */
-    loadScene(scenePath) {
+    load(scenePath) {
         if (!this._parent) return;
 
         // remove "/" as a last char if exists
@@ -102,10 +102,10 @@ class SceneStorage {
     }
 
     /**
-     * Unloads scene. Doesn't affect evaluated javascript code, 
+     * Clears scene storage. Doesn't affect evaluating javascript code, 
      * so it have to be stopped from the inside.
      */
-    unloadScene() {
+    clear() {
         if (!this._parent) return;
         this._parent.innerHTML = "";
     }
