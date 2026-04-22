@@ -33,11 +33,11 @@ class Tools {
     }
 }
 /**
- * Manages scene loading process.
+ * General scene class.
  * 
- * To load the scene call `SceneLoader.load("path/to/scene_folder")`;
+ * To load scene call `Scene.load("path/to/scene_folder")`;
  * 
- * To unload the scene call `SceneLoader.unload()`;
+ * To unload scene call `Scene.unload()`.
  */
 class Scene {
     /**
