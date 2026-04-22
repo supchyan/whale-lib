@@ -41,8 +41,8 @@ class Tools {
  */
 class Scene {
     /**
-     * @param {*} scene `HTMLElement` reference. Use something like `document.getElementById()`. 
-    *                   It will be used as a container to store scene content.
+     * @param {*} parent `HTMLElement` reference. Use something like `document.getElementById()`. 
+    *                    It will be used as a container to load/unload scene content.
      */
     constructor(parent) {
         parent.setAttribute("style", `/* modified by whale-lib */
