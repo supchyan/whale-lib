@@ -33,13 +33,13 @@ class Tools {
     }
 }
 /**
- * General scene class.
+ * Contains methods to work with scenes.
  * 
  * To load scene call `Scene.load("path/to/scene_folder")`;
  * 
  * To unload scene call `Scene.unload()`.
  */
-class Scene {
+class SceneStorage {
     /**
      * @param {*} parent `HTMLElement` reference. Use something like `document.getElementById()`. 
     *                    It will be used as a container to load/unload scene content.
@@ -62,10 +62,17 @@ class Scene {
     }
 
     /**
-     * Loads scene content by `scenePath` specified.
-     * @param {*} scenePath Path to scene directory.
+     * True whenever scene is loaded;
      */
-    load(scenePath) {
+    isEmpty() {
+        return this._parent.innerHTML == "";
+    }
+
+    /**
+     * Loads scene content by `scenePath` specified.
+     * @param {*} scenePath path to scene directory.
+     */
+    loadScene(scenePath) {
         if (!this._parent) return;
 
         // remove "/" as a last char if exists
@@ -98,7 +105,7 @@ class Scene {
      * Unloads scene. Doesn't affect evaluated javascript code, 
      * so it have to be stopped from the inside.
      */
-    unload() {
+    unloadScene() {
         if (!this._parent) return;
         this._parent.innerHTML = "";
     }

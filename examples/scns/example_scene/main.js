@@ -10,8 +10,8 @@ Tools.eval("./scns/example_scene/src/text_replacer.js");
 
 // bounce animation example loop
 (function bounce() {
-    // loop check if node exists
-    if (document.getElementById("exampleElement")) {
+    // loop check if scene is loaded depending on `exampleContainer` scene instance from `index.html`
+    if (!exampleContainer.isEmpty()) {
         document.getElementById("exampleElement").style.scale = `${1.25 + .1 * Math.sin(.1 * offset++)}`;
         console.debug(`Invoked at: ${Date.now()}`);
         setTimeout(() => { bounce() }, 1);
