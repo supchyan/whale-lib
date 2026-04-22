@@ -7,16 +7,16 @@ const elementId = "exampleElement";
 // in example bounce() loop function
 var offset = 0;
 
-// evaluate additional `.../misc/other_script.js` file.
-Tools.eval("./root/example_scene/misc/other_script.js");
+// evaluate additional `.js` file.
+Tools.eval("./root/example_scene/src/text_replacer.js");
 
 // bounce animation example loop
 (function bounce() {
-    if (!Tools.isEmpty(document.getElementById("root"))) {   // loop check if parent node is not empty
-        document.getElementById(elementId).style.scale = `${1.25 + .1 * Math.sin(.1 * offset++)}`;
-        
-        console.debug(`Invoked at: ${Date.now()}`);
+    // loop check if parent node is not empty
+    if (!Tools.isEmpty(document.getElementById("root"))) {
 
+        document.getElementById(elementId).style.scale = `${1.25 + .1 * Math.sin(.1 * offset++)}`;
+        console.debug(`Invoked at: ${Date.now()}`);
         setTimeout(() => { bounce() }, 1);
     }
 })();

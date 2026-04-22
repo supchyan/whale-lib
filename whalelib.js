@@ -81,14 +81,14 @@ class Scene {
         }
 
         // load html
-        fetch(`${scenePath}/index.html`).then(res => {
+        fetch(`${scenePath}/layout.html`).then(res => {
             if (!res.ok) return this.unload();
             
             res.text().then(content => {
                 this._parent.innerHTML = content;
 
                 // execute javascript
-                fetch(`${scenePath}/script.js`).then(res => {
+                fetch(`${scenePath}/main.js`).then(res => {
                     if (!res.ok) return this.unload();
 
                     res.text().then(code => {
