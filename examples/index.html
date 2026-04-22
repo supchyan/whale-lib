@@ -5,8 +5,9 @@
 </head>
 
 <body>
-    <div id="root"></div>
-    <div id="otherRoot"></div>
+    <!-- scene containers -->
+    <div id="exampleParent"></div>
+    <div id="otherExampleParent"></div>
 </body>
 
 <style>
@@ -27,13 +28,13 @@
     Tools.useCustomBody();
 
     // create scene instances
-    const scene         = new Scene(document.getElementById("root"));
-    const otherScene    = new Scene(document.getElementById("otherRoot"));
+    const exampleParent      = new Scene(document.getElementById("exampleParent"));
+    const otherExampleParent = new Scene(document.getElementById("otherExampleParent"));
 
     // load scene content using this
-    scene.load("./root/example_scene");
-    otherScene.load("./root/other_example_scene");
+    exampleParent.load("./root/example_scene");
+    otherExampleParent.load("./root/other_example_scene");
 
     // unload scene after a while
-    setTimeout(() => { scene.unload() }, 4000);
+    setTimeout(() => { exampleParent.unload() }, 4000);
 </script>

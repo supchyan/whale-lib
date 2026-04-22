@@ -31,13 +31,6 @@ class Tools {
             });
         });
     }
-
-    /**
-     * Returns `true` if `element` has empty body.
-     */
-    static isEmpty(element) {
-        return element.innerHTML == "";
-    }
 }
 /**
  * Manages scene loading process.
@@ -93,9 +86,6 @@ class Scene {
 
                     res.text().then(code => {
                         eval(code);
-
-                        // switch loaded flag
-                        this.isLoaded = true;
                     }).catch(e => {
                         console.error(e);
                     });
@@ -110,7 +100,6 @@ class Scene {
      */
     unload() {
         if (!this._parent) return;
-
         this._parent.innerHTML = "";
     }
 }
