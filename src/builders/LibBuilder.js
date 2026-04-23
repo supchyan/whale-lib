@@ -16,6 +16,9 @@ export class LibBuilder {
 
         const bundleName = "whalelib.js";
         const testsIncludeFlag = "-ti";
+        // file determines a directory have to be skipped
+        // during the bundle process
+        const skipFileName = ".skip";
         
         // stores content to write into a bundle file
         var buffer = "";
@@ -31,18 +34,32 @@ export class LibBuilder {
         if (!fs.existsSync(buildPath)) {
             fs.mkdirSync(buildPath);
         }
-        
-        console.log(`Reading ${commonPath}`);
-        console.log(`--------------------`);
 
-        // --- BUNDLERS SECTION ---
-        fs.readdirSync(commonPath).forEach(file => {
-            buffer += `${fs.readFileSync(`${commonPath}/${file}`)}\n`;
-            console.log(file);
-        });
+        /**
+         * Recursively check each folder and file in specified directory 
+         * to write it's data into a `buffer`.
+         * @param {*} recursePath have to be a `srcPath` directory at the beginning.
+         */
+        function writeBuffer(recursePath) {
+            if (fs.lstatSync(recursePath).isDirectory()) {
+                var items = fs.readdirSync(recursePath);
+
+                if (!items.includes(skipFileName)) {
+                    items.forEach(item => {
+                        writeBuffer(`${recursePath}/${item}`);
+                    });
+                }
+
+                return;
+            }
+            
+            buffer += `${fs.readFileSync(recursePath)}\n`;
+            console.log(recursePath);
+        }
+
+        writeBuffer(srcPath);
 
         console.log();
-        // --- END OF BUNDLERS ---
 
         const destination       = `${buildPath}/${bundleName}`;
         const cloneDestination  = `${testsPath}/${bundleName}`;
