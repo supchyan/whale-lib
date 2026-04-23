@@ -5,7 +5,7 @@ My general-purpose frontend library for web applications.
 ```
 
 ### Usage
-Run `build.js` to bundle whalelib as a self-contained file. Then include this file into your public directory to make it accessable on client-side.
+Run `build.js` to bundle whalelib as a single file. It will be saved to `.build` directory as `whalelib.js`. Then put this bundle file into your public directory to make it accessable on client-side.
 
 Check [tests](./tests) folder as an example of common usage of this lib.
 
