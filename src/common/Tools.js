@@ -17,8 +17,8 @@ class Tools {
         `);
     }
     /**
-     * Evaluates javascript by path specified.
-     * @param {*} path path to javascript file to evaluate.
+     * Asynchronically evaluates javascript by path specified.
+     * @param {*} path path to `.js` file to evaluate.
      */
     static eval(path) {
         fetch(path).then(res => {
@@ -30,5 +30,31 @@ class Tools {
                 eval(code);
             });
         });
+    }
+
+    /**
+     * Reads file returning file content of specified type.
+     * @param {*} path path to file.
+     * @param {*} type File type. Use `FileType` class to resolve this.
+     * @returns File content based on type specified.
+     */
+    static async readFile(path, type) {
+        var data;
+
+        const file = await fetch(path);
+
+        if (type == FileType.text()) {
+            data = await file.text();
+        }
+
+        if (type == FileType.bytes()) {
+            data = await file.bytes();
+        }
+
+        if (type == FileType.json()) {
+            data = await file.json();
+        }
+
+        return data;
     }
 }

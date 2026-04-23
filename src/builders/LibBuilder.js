@@ -25,7 +25,7 @@ export class LibBuilder {
 
         console.clear();
 
-        console.log(`[!!!] Bundling ${bundleName}\n`);
+        console.log(`Bundling ${bundleName}\n`);
 
         if (!fs.existsSync(srcPath)) {
             return console.error("[!!!] Source directory cannot be found. Make sure you run this script under root directory of the whalelib's source.\n")
@@ -40,7 +40,7 @@ export class LibBuilder {
          * to write it's data into a `buffer`.
          * @param {*} recursePath have to be a `srcPath` directory at the beginning.
          */
-        function writeBuffer(recursePath) {
+        (function writeBuffer(recursePath) {
             if (fs.lstatSync(recursePath).isDirectory()) {
                 var items = fs.readdirSync(recursePath);
 
@@ -55,9 +55,7 @@ export class LibBuilder {
             
             buffer += `${fs.readFileSync(recursePath)}\n`;
             console.log(recursePath);
-        }
-
-        writeBuffer(srcPath);
+        })(srcPath);
 
         console.log();
 

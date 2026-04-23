@@ -15,9 +15,6 @@
         background-color: #111;
         display: flex;
     }
-    #otherContainer {
-        max-width: 20rem;
-    }
 </style>
 
 <!-- connect whalelib scripts -->
@@ -33,7 +30,8 @@
 
     // load scene content using this
     exampleContainer.load("./scns/example_scene");
-    otherContainer.load("./scns/other_scene");
+    // otherContainer.load("./scns/other_scene");
+    otherContainer.load("./scns/graphics_test");
 
     // unload scene after a while
     setTimeout(() => { exampleContainer.clear() }, 4000);
