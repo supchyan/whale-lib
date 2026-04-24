@@ -6,8 +6,8 @@
 
 <body>
     <!-- scene containers -->
-    <div id="exampleContainer"></div>
-    <div id="otherContainer"></div>
+    <div id="exampleScene"></div>
+    <div id="graphicsScene"></div>
 </body>
 
 <style>
@@ -25,14 +25,15 @@
     Tools.useCustomBody();
 
     // create scene instances
-    const exampleContainer  = new SceneStorage(document.getElementById("exampleContainer"));
-    const otherContainer    = new SceneStorage(document.getElementById("otherContainer"));
+    const exampleScene  = new Scene(document.getElementById("exampleScene"));
+    const graphicsScene = new Scene(document.getElementById("graphicsScene"));
 
     // load scene content using this
-    exampleContainer.load("./scns/example_scene");
-    // otherContainer.load("./scns/other_scene");
-    otherContainer.load("./scns/graphics_test");
+    exampleScene.load("./scns/example_scene");
+    graphicsScene.load("./scns/graphics_scene");
 
     // unload scene after a while
-    setTimeout(() => { exampleContainer.clear() }, 4000);
+    setTimeout(() => { exampleScene.clear() }, 4000);
+    setTimeout(() => { exampleScene.load("./scns/other_scene") }, 5000);
+
 </script>

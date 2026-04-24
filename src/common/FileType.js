@@ -2,13 +2,13 @@
  * Contains file types for `Tools.readFile(path, type)`.
  */
 class FileType {
-    static text() {
+    static get Text() {
         return 0;
     }
-    static bytes() {
+    static get Bytes() {
         return 1;
     }
-    static json() {
+    static get Json() {
         return 2;
     }
 }

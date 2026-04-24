@@ -12,14 +12,14 @@ class Vector2 {
     }
 
     /**
-     * Returns current vector length.
+     * Returns the vector's length.
      */
     getLength() {
         return Math.sqrt((Math.pow(this.x, 2) + Math.pow(this.y, 2)));
     }
 
     /**
-     * Adds `offsetVector` to current vector.
+     * Adds `offsetVector` to the current vector.
      * @param {*} offsetVector reference `Vector2`.
      * @returns New `Vector2`.
      */

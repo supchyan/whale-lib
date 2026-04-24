@@ -43,15 +43,15 @@ class Tools {
 
         const file = await fetch(path);
 
-        if (type == FileType.text()) {
+        if (type == FileType.Text) {
             data = await file.text();
         }
 
-        if (type == FileType.bytes()) {
+        if (type == FileType.Bytes) {
             data = await file.bytes();
         }
 
-        if (type == FileType.json()) {
+        if (type == FileType.Json) {
             data = await file.json();
         }
 

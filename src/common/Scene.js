@@ -1,11 +1,7 @@
 /**
- * Contains methods to work with scenes.
- * 
- * To load scene call `Scene.load("path/to/scene_folder")`;
- * 
- * To unload scene call `Scene.unload()`.
+ * Scene class handles general scene methods.
  */
-class SceneStorage {
+class Scene {
     /**
      * @param {*} parent `HTMLElement` reference. Use something like `document.getElementById()`. 
     *                    It will be used as a container to load/unload scene content.
@@ -24,14 +20,14 @@ class SceneStorage {
             margin: 0;
         `);
 
-        this._parent = parent;
+        this.parent = parent;
     }
 
     /**
      * `true` whenever `SceneStorage` is empty.
      */
     isEmpty() {
-        return this._parent.innerHTML == "";
+        return this.parent.innerHTML == "";
     }
 
     /**
@@ -39,7 +35,7 @@ class SceneStorage {
      * @param {*} scenePath path to scene directory.
      */
     load(scenePath) {
-        if (!this._parent) return;
+        if (!this.parent) return;
 
         // remove "/" as a last char if exists
         if (scenePath.endsWith("/")) {
@@ -51,7 +47,7 @@ class SceneStorage {
             if (!res.ok) return this.unload();
             
             res.text().then(content => {
-                this._parent.innerHTML = content;
+                this.parent.innerHTML = content;
 
                 // execute javascript
                 fetch(`${scenePath}/main.js`).then(res => {
@@ -72,7 +68,21 @@ class SceneStorage {
      * so it have to be stopped from the inside.
      */
     clear() {
-        if (!this._parent) return;
-        this._parent.innerHTML = "";
+        if (!this.parent) {
+            return;
+        }
+
+        this.parent.innerHTML = "";
+    }
+    
+    /**
+     * General update loop. Breaks after scene is being cleared (i.e. has an empty body).
+     * @param {*} _void a function to be looped.
+     */
+    update(_void) {
+        if (!this.isEmpty()) {
+            _void();
+            setTimeout(() => { this.update(_void) }, 1);
+        }
     }
 }

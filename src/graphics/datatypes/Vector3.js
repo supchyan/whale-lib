@@ -6,7 +6,7 @@ class Vector3 {
     }
 
     /**
-     * Rotates `Vector3` by specified angle around Y.
+     * Rotates the vector by a specified angle around Y.
      * @param {*} angle angle in radians.
      * @returns a new rotated `Vector3` object.
      */
@@ -22,7 +22,7 @@ class Vector3 {
     }
 
     /**
-     * Rotates vector with specified angle around Z.
+     * Rotates the vector by a specified angle around Z.
      * @param {*} angle angle in radians.
      * @returns a new rotated `Vector3` object.
      */
@@ -38,7 +38,7 @@ class Vector3 {
     }
 
     /**
-     * Rotates vector with specified angle around X.
+     * Rotates the vector by a specified angle around X.
      * @param {*} angle angle in radians.
      * @returns a new rotated `Vector3` object.
      */
@@ -61,14 +61,14 @@ class Vector3 {
     }
 
     /**
-     * Returns current vector length.
+     * Returns the vector's length.
      */
     getLength() {
         return Math.sqrt((Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2)));
     }
 
     /**
-     * Converts `Vector3` to `Vector2` projecting it to 2D space.
+     * Converts the vector into a `Vector2` by projecting it to a 2D space.
      * @returns a new `Vector2` object.
      */
     toVector2() {
@@ -79,8 +79,8 @@ class Vector3 {
     }
 
     /**
-     * Rotates vector by a rotation vector specified.
-     * @param {*} rotation rotation vector as `Vector3`.
+     * Rotates the vector around a rotation vector specified.
+     * @param {*} rotation a rotation vector as `Vector3`.
      * @returns a new rotated `Vector3`.
      */
     toRotation(rotation) {
@@ -88,7 +88,7 @@ class Vector3 {
     }
 
     /**
-     * Adds `offsetVector` to current vector.
+     * Adds `offsetVector` to the current vector.
      * @param {*} offsetVector reference `Vector3`.
      * @returns a new `Vector3`.
      */

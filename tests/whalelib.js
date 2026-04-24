@@ -105,36 +105,34 @@ class ColorHelper {
 }
 class Converter {
     /**
-     * Converts anything to a HEX string.
-     * @param {*} ref data reference.
-     * @returns HEX string.
+     * Converts string to a [utf-8] HEX string.
+     * @param {*} ref a string reference.
+     * @returns a [utf-8] HEX string.
      */
     static toHEX(ref) {
-        return ref.toString(16).padStart(2, "0");
+        return ref.split("")
+            .map(c => c.charCodeAt(0).toString(16).padStart(2, "0"))
+            .join("");
     }
 }
 /**
  * Contains file types for `Tools.readFile(path, type)`.
  */
 class FileType {
-    static text() {
+    static get Text() {
         return 0;
     }
-    static bytes() {
+    static get Bytes() {
         return 1;
     }
-    static json() {
+    static get Json() {
         return 2;
     }
 }
 /**
- * Contains methods to work with scenes.
- * 
- * To load scene call `Scene.load("path/to/scene_folder")`;
- * 
- * To unload scene call `Scene.unload()`.
+ * Scene class handles general scene methods.
  */
-class SceneStorage {
+class Scene {
     /**
      * @param {*} parent `HTMLElement` reference. Use something like `document.getElementById()`. 
     *                    It will be used as a container to load/unload scene content.
@@ -153,14 +151,14 @@ class SceneStorage {
             margin: 0;
         `);
 
-        this._parent = parent;
+        this.parent = parent;
     }
 
     /**
      * `true` whenever `SceneStorage` is empty.
      */
     isEmpty() {
-        return this._parent.innerHTML == "";
+        return this.parent.innerHTML == "";
     }
 
     /**
@@ -168,7 +166,7 @@ class SceneStorage {
      * @param {*} scenePath path to scene directory.
      */
     load(scenePath) {
-        if (!this._parent) return;
+        if (!this.parent) return;
 
         // remove "/" as a last char if exists
         if (scenePath.endsWith("/")) {
@@ -180,7 +178,7 @@ class SceneStorage {
             if (!res.ok) return this.unload();
             
             res.text().then(content => {
-                this._parent.innerHTML = content;
+                this.parent.innerHTML = content;
 
                 // execute javascript
                 fetch(`${scenePath}/main.js`).then(res => {
@@ -201,8 +199,22 @@ class SceneStorage {
      * so it have to be stopped from the inside.
      */
     clear() {
-        if (!this._parent) return;
-        this._parent.innerHTML = "";
+        if (!this.parent) {
+            return;
+        }
+
+        this.parent.innerHTML = "";
+    }
+    
+    /**
+     * General update loop. Breaks after scene is being cleared (i.e. has an empty body).
+     * @param {*} _void a function to be looped.
+     */
+    update(_void) {
+        if (!this.isEmpty()) {
+            _void();
+            setTimeout(() => { this.update(_void) }, 1);
+        }
     }
 }
 /**
@@ -250,15 +262,15 @@ class Tools {
 
         const file = await fetch(path);
 
-        if (type == FileType.text()) {
+        if (type == FileType.Text) {
             data = await file.text();
         }
 
-        if (type == FileType.bytes()) {
+        if (type == FileType.Bytes) {
             data = await file.bytes();
         }
 
-        if (type == FileType.json()) {
+        if (type == FileType.Json) {
             data = await file.json();
         }
 
@@ -266,18 +278,34 @@ class Tools {
     }
 }
 class Edge {
+    /**
+     * 
+     * @param {*} begin Start index of a vertex 
+     * pointing to the verticies array instance of the `Mesh` object.
+     * @param {*} end End index of a vertex 
+     * pointing to the verticies array instance of the `Mesh` object.
+     */
     constructor(begin, end) {
         this.begin = begin;
         this.end = end;
     }
 }
 class Mesh {
+    /**
+     * 
+     * @param {*} vertices Array of verticies as `Vector3[]`.
+     * @param {*} edges Array of edges as `Edge[]`.
+     */
     constructor(vertices, edges) {
         this.vertices = vertices;
         this.edges = edges;
     }
 }
 class Rect {
+    /**
+     * @param {*} w Rectangle's width.
+     * @param {*} h Rectangle's height.
+     */
     constructor(w, h) {
         this.w = w;
         this.h = h;
@@ -297,14 +325,14 @@ class Vector2 {
     }
 
     /**
-     * Returns current vector length.
+     * Returns the vector's length.
      */
     getLength() {
         return Math.sqrt((Math.pow(this.x, 2) + Math.pow(this.y, 2)));
     }
 
     /**
-     * Adds `offsetVector` to current vector.
+     * Adds `offsetVector` to the current vector.
      * @param {*} offsetVector reference `Vector2`.
      * @returns New `Vector2`.
      */
@@ -323,7 +351,7 @@ class Vector3 {
     }
 
     /**
-     * Rotates `Vector3` by specified angle around Y.
+     * Rotates the vector by a specified angle around Y.
      * @param {*} angle angle in radians.
      * @returns a new rotated `Vector3` object.
      */
@@ -339,7 +367,7 @@ class Vector3 {
     }
 
     /**
-     * Rotates vector with specified angle around Z.
+     * Rotates the vector by a specified angle around Z.
      * @param {*} angle angle in radians.
      * @returns a new rotated `Vector3` object.
      */
@@ -355,7 +383,7 @@ class Vector3 {
     }
 
     /**
-     * Rotates vector with specified angle around X.
+     * Rotates the vector by a specified angle around X.
      * @param {*} angle angle in radians.
      * @returns a new rotated `Vector3` object.
      */
@@ -378,14 +406,14 @@ class Vector3 {
     }
 
     /**
-     * Returns current vector length.
+     * Returns the vector's length.
      */
     getLength() {
         return Math.sqrt((Math.pow(this.x, 2) + Math.pow(this.y, 2) + Math.pow(this.z, 2)));
     }
 
     /**
-     * Converts `Vector3` to `Vector2` projecting it to 2D space.
+     * Converts the vector into a `Vector2` by projecting it to a 2D space.
      * @returns a new `Vector2` object.
      */
     toVector2() {
@@ -396,8 +424,8 @@ class Vector3 {
     }
 
     /**
-     * Rotates vector by a rotation vector specified.
-     * @param {*} rotation rotation vector as `Vector3`.
+     * Rotates the vector around a rotation vector specified.
+     * @param {*} rotation a rotation vector as `Vector3`.
      * @returns a new rotated `Vector3`.
      */
     toRotation(rotation) {
@@ -405,7 +433,7 @@ class Vector3 {
     }
 
     /**
-     * Adds `offsetVector` to current vector.
+     * Adds `offsetVector` to the current vector.
      * @param {*} offsetVector reference `Vector3`.
      * @returns a new `Vector3`.
      */
