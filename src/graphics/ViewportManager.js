@@ -71,7 +71,7 @@ class ViewportManager {
     /**
      * Draws an object with specified flags.
      * @param {*} mesh `Mesh` object. Use `MeshManager.createMesh()`.
-     * @param {*} color Object color as HEX string.
+     * @param {*} color `Color` object.
      * @param {*} rotation Object rotation vector as `Vector3`.
      * @param {*} position Object position as `Vector2` [centered at (0, 0) by default].
      */
@@ -91,13 +91,13 @@ class ViewportManager {
 
         for (let i = 0; i < points.length; i++) {
             // draw a vertex (im not sure if it's needed, maybe not.)
-            this.#drawDot(color, points[i]);
+            this.#drawDot(color.toHEX(), points[i]);
         }
 
         for (let j = 0; j < edges.length; j++) {
             const beginVector   = points[ edges[j].begin ];
             const targetVector  = points[ edges[j].end   ];
-            this.#drawLine(color, beginVector, targetVector);
+            this.#drawLine(color.toHEX(), beginVector, targetVector);
         }
     }
 }

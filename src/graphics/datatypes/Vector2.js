@@ -5,7 +5,7 @@ class Vector2 {
     }
     
     /**
-     * new Vector2(0, 0).
+     * Equals to `new Vector2(0, 0)`.
      */
     static get Zero() {
         return new Vector2(0, 0);

@@ -8,7 +8,7 @@ class Vector3 {
     /**
      * Rotates `Vector3` by specified angle around Y.
      * @param {*} angle angle in radians.
-     * @returns Rotated `Vector3` object.
+     * @returns a new rotated `Vector3` object.
      */
     #rotateXZ(angle) {
         const cos = Math.cos(angle);
@@ -24,7 +24,7 @@ class Vector3 {
     /**
      * Rotates vector with specified angle around Z.
      * @param {*} angle angle in radians.
-     * @returns Rotated `Vector3` object.
+     * @returns a new rotated `Vector3` object.
      */
     #rotateXY(angle) {
         const cos = Math.cos(angle);
@@ -40,7 +40,7 @@ class Vector3 {
     /**
      * Rotates vector with specified angle around X.
      * @param {*} angle angle in radians.
-     * @returns rotated `Vertex` object.
+     * @returns a new rotated `Vector3` object.
      */
     #rotateYZ(angle) { // : Vertex
         const cos = Math.cos(angle);
@@ -54,7 +54,7 @@ class Vector3 {
     }
 
     /**
-     * new Vector3(0, 0, 0).
+     * Equals to `new Vector3(0, 0, 0)`.
      */
     static get Zero() {
         return new Vector3(0, 0, 0);
@@ -69,7 +69,7 @@ class Vector3 {
 
     /**
      * Converts `Vector3` to `Vector2` projecting it to 2D space.
-     * @returns New `Vector2` object.
+     * @returns a new `Vector2` object.
      */
     toVector2() {
         return new Vector2(
@@ -81,7 +81,7 @@ class Vector3 {
     /**
      * Rotates vector by a rotation vector specified.
      * @param {*} rotation rotation vector as `Vector3`.
-     * @returns New rotated `Vector3`.
+     * @returns a new rotated `Vector3`.
      */
     toRotation(rotation) {
         return this.#rotateYZ(rotation.x).#rotateXZ(rotation.y).#rotateXY(rotation.z);
@@ -90,7 +90,7 @@ class Vector3 {
     /**
      * Adds `offsetVector` to current vector.
      * @param {*} offsetVector reference `Vector3`.
-     * @returns New `Vector3`.
+     * @returns a new `Vector3`.
      */
     add(offsetVector) {
         return new Vector3(
