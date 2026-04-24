@@ -80,7 +80,7 @@ class ViewportManager {
         const edges     = mesh.edges;
         const points    = [];
         
-        this.ctx.clearRect(0, 0, this.rect.w, this.rect.h); // clear screen
+        this.ctx.clearRect(0, 0, this.rect.w, this.rect.h); // clears the screen
 
         for (const vector3 of vertices) {
             var vector2 = vector3.toRotation(rotation).toVector2();     // point projection in local coords

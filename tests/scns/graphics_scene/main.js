@@ -11,8 +11,8 @@ Tools.readFile("./scns/graphics_scene/res/cube.obj", FileType.Text).then(wavefro
 graphicsScene.update(() => { // reference to a scene instance
     if (mesh) {
         var offset = 0.05 * t++;
-        vmanager.drawObject(mesh, ColorHelper.byAngle(30 * offset).toGreyscale(), 
-            new Vector3(0, offset, 0), 
+        vmanager.drawObject(mesh, ColorHelper.byAngle(30 * offset), 
+            new Vector3(0, offset, .5 * offset), 
             Vector2.Zero
         );
     }

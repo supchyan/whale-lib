@@ -68,10 +68,7 @@ class Scene {
      * so it have to be stopped from the inside.
      */
     clear() {
-        if (!this.parent) {
-            return;
-        }
-
+        if (!this.parent) return;
         this.parent.innerHTML = "";
     }
     
