@@ -8,6 +8,7 @@
     <!-- scene containers -->
     <div id="exampleScene"></div>
     <div id="animationScene"></div>
+    <div id="graphicsScene"></div>
 </body>
 
 <style>
@@ -27,10 +28,12 @@
     // create scene instances
     const exampleScene  = new Scene(document.getElementById("exampleScene"));
     const animationScene = new Scene(document.getElementById("animationScene"));
+    const graphicsScene = new Scene(document.getElementById("graphicsScene"));
 
     // load scene content using this
     exampleScene.load("./scns/example_scene");
     animationScene.load("./scns/animation_scene");
+    graphicsScene.load("./scns/graphics_scene");
 
     // unload scene after a while
     setTimeout(() => { exampleScene.clear() }, 4000);
