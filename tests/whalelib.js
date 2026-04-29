@@ -6,18 +6,65 @@ class Color {
      * @param {*} r Red   color channel `0...255`.
      * @param {*} g Green color channel `0...255`.
      * @param {*} b Blue  color channel `0...255`.
+     * @param {*} a Alpha color channel `0...255`.
      */
-    constructor(r, g, b) {
+    constructor(r, g, b, a) {
         this.r = r;
+        this.g = g;
+        this.b = b;
+        this.a = a;
 
-        if (g === undefined && b === undefined) {
-            this.g = r;
-            this.b = r;
+        if (r === undefined) {
+            this.r = 0;
         }
-        else {
-            this.g = g;
-            this.b = b;
+        if (g === undefined) {
+            this.g = this.r;
         }
+        if (b === undefined) {
+            this.b = this.r;
+        }
+        if (a === undefined) {
+            this.a = 255;
+        }
+    }
+    /**
+     * Returns a new `Color` object from a hex color string.
+     * 
+     *  You can use any of these variations: `#RRGGBB`, `#RRGGBBAA`, `#RGB`, `#RGBA`.
+     * 
+     * @param {*} hex a HEX color reference.
+     */
+    static fromHEX(hex) {
+        if (hex[0] == "#") {
+            hex = hex.substr(1); // remove #
+        }
+
+        var r, g, b, a;
+
+        if (hex.length == 3) {
+            r = parseInt(`${hex[0]}${hex[0]}`, 16);
+            g = parseInt(`${hex[1]}${hex[1]}`, 16);
+            b = parseInt(`${hex[2]}${hex[2]}`, 16);
+        }
+
+        if (hex.length == 4) {
+            r = parseInt(`${hex[0]}${hex[0]}`, 16);
+            g = parseInt(`${hex[1]}${hex[1]}`, 16);
+            b = parseInt(`${hex[2]}${hex[2]}`, 16);
+            a = parseInt(`${hex[3]}${hex[3]}`, 16);
+        }
+
+        if (hex.length >= 6) {
+            r = parseInt(`${hex[0]}${hex[1]}`, 16);
+            g = parseInt(`${hex[2]}${hex[3]}`, 16);
+            b = parseInt(`${hex[4]}${hex[5]}`, 16);
+        }
+
+        if (hex.length == 8) {
+            a = parseInt(`${hex[6]}${hex[7]}`, 16);
+        }
+
+        return new Color(r, g, b, a);
     }
     toGreyscale() {
         return new Color(Math.floor((this.r + this.g + this.b) / 3));
@@ -199,10 +246,7 @@ class Scene {
      * so it have to be stopped from the inside.
      */
     clear() {
-        if (!this.parent) {
-            return;
-        }
-
+        if (!this.parent) return;
         this.parent.innerHTML = "";
     }
     
@@ -275,6 +319,165 @@ class Tools {
         }
 
         return data;
+    }
+}
+/**
+ * Manages `Mesh` objects.
+ */
+class MeshManager {
+    /**
+     * Returns a new `Mesh` object by `wavefrontData` specified.
+     * @param {*} wavefrontData Raw wavefront `.obj` data as string.
+     */
+    static createMesh(wavefrontData) {
+        const vertices  = []; // vertices array
+        const edges     = []; // edges array
+
+        const fileLines = wavefrontData.split("\n");
+
+        for (let fileLine of fileLines) {
+            // if line is vertex data
+            if (fileLine.startsWith("v ")) {
+                const coords = fileLine.replace("v ", "").split(" "); // parse vertex coords
+                const vertex  = new Vector3(
+                    parseFloat(coords[0]), parseFloat(coords[1]), 1 - parseFloat(coords[2])
+                );
+                vertices.push(vertex);
+            }
+            if (fileLine.startsWith("l ")) {
+                const indexes = fileLine.replace("l ", "").split(" "); // parse edges indexes
+                const edge = new Edge(
+                    parseInt(indexes[0]) - 1, parseInt(indexes[1]) - 1
+                );
+                edges.push(edge);
+            }
+        }
+
+        return new Mesh(vertices, edges);
+    }
+}
+/**
+ * Works with 3D graphics using wavefront objects as a reference.
+ * 
+ * If you use Blender as editing software 
+ * make sure exported `.obj` files have [line elements](https://en.wikipedia.org/wiki/Wavefront_.obj_file#Line_elements).
+ * To let Blender properly export your mesh data use `Delete -> 'Only Faces'` in `Edit Mode`.
+ * 
+ * `ViewportManager` is performant 3D engine, so all of decisions is built following this construct. 
+ * There is no animation support or texture draw calls. This engine works with wireframe graphics only,
+ * using vanilla [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) methods.
+ */
+class ViewportManager {
+    constructor(viewport) {
+        this.ctx = viewport.getContext("2d");
+        this.rect = new Rect(
+            viewport.offsetWidth, 
+            viewport.offsetHeight
+        );
+
+        viewport.setAttribute("width",   viewport.offsetWidth);
+        viewport.setAttribute("height", viewport.offsetHeight);
+    }
+
+    /**
+     * Fills canvas with a color specified.
+     * @param {*} color preferred canvas color.
+     */
+    #fillRect(color) {
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(0, 0, this.rect.w, this.rect.h);
+    }
+
+    /**
+     * Draws a dot in specified position.
+     * @param {*} color preferred dot color.
+     * @param {*} position position vector as `Vector2`.
+     */
+    #drawDot(color, position) {
+        const scl = 3; // 3
+        this.ctx.fillStyle = color;
+        this.ctx.fillRect(position.x - .5 * scl, position.y - .5 * scl, scl, scl);
+    }
+
+    /**
+     * Draws a line from `beginVector` to `targetVector`.
+     * @param {*} color line color.
+     * @param {*} beginVector start coords as `Vector2`.
+     * @param {*} targetVector destination coords as `Vector2`.
+     */
+    #drawLine(color, beginVector, targetVector) {
+        this.ctx.lineWidth = 3; // 3
+        this.ctx.strokeStyle = color;
+        this.ctx.beginPath();
+        this.ctx.moveTo(beginVector.x, beginVector.y);
+        this.ctx.lineTo(targetVector.x, targetVector.y);
+        this.ctx.stroke();
+    }
+
+    /**
+     * Maps default `-1..1` wavefront coords to canvas related `0..w`.
+     * @param {*} vector a `Vector2` to be mapped.
+     * @returns New `Vector2` object.
+     */
+    #map(vector) {
+        return new Vector2(
+            ((vector.x + 1) / 2) * this.rect.w,
+            (1 - (vector.y + 1) / 2) * this.rect.h
+        );
+    }
+
+    /**
+     * Draws an object with specified flags.
+     * @param {*} mesh `Mesh` object. Use `MeshManager.createMesh()`.
+     * @param {*} color `Color` object.
+     * @param {*} rotation Object rotation vector as `Vector3`.
+     * @param {*} position Object position as `Vector2` [centered at (0, 0) by default].
+     */
+    drawObject(mesh, color, rotation = new Vector3(), position = new Vector2()) {
+        const vertices  = mesh.vertices;
+        const edges     = mesh.edges;
+        const points    = [];
+        
+        this.ctx.clearRect(0, 0, this.rect.w, this.rect.h); // clears the screen
+
+        for (const vector3 of vertices) {
+            var vector2 = vector3.toRotation(rotation).toVector2();     // point projection in local coords
+            var point   = this.#map(vector2).add(position);   // point projection in canvas coords
+
+            points.push(point); // add point to a list
+        }
+
+        for (let i = 0; i < points.length; i++) {
+            // draw a vertex (im not sure if it's needed, maybe not.)
+            this.#drawDot(color.toHEX(), points[i]);
+        }
+
+        for (let j = 0; j < edges.length; j++) {
+            const beginVector   = points[ edges[j].begin ];
+            const targetVector  = points[ edges[j].end   ];
+            this.#drawLine(color.toHEX(), beginVector, targetVector);
+        }
+    }
+}
+/**
+ * Useful methods in addiction to the `Math` class.
+ */
+class MathHelper {
+    /**
+     * Converts radians angle to a degrees one.
+     * @param {*} rad angle value.
+     * @returns angle in degrees.
+     */
+    static toDegrees(rad) {
+        return (180 / this.PI) * rad;
+    }
+    /**
+     * Converts degrees angle to a radians one.
+     * @param {*} deg angle value.
+     * @returns angle in radians.
+     */
+    static toRadians(deg) {
+        return (this.PI / 180) * deg;
     }
 }
 class Edge {
@@ -446,161 +649,73 @@ class Vector3 {
     }
 }
 /**
- * Works with meshes data.
- */
-class MeshManager {
-    /**
-     * Returns a new `Mesh` object by `wavefrontData` specified.
-     * @param {*} wavefrontData Raw wavefront `.obj` data as string.
-     */
-    static createMesh(wavefrontData) {
-        const vertices  = []; // vertices array
-        const edges     = []; // edges array
-
-        const fileLines = wavefrontData.split("\n");
-
-        for (let fileLine of fileLines) {
-            // if line is vertex data
-            if (fileLine.startsWith("v ")) {
-                const coords = fileLine.replace("v ", "").split(" "); // parse vertex coords
-                const vertex  = new Vector3(
-                    parseFloat(coords[0]), parseFloat(coords[1]), 1 - parseFloat(coords[2])
-                );
-                vertices.push(vertex);
-            }
-            if (fileLine.startsWith("l ")) {
-                const indexes = fileLine.replace("l ", "").split(" "); // parse edges indexes
-                const edge = new Edge(
-                    parseInt(indexes[0]) - 1, parseInt(indexes[1]) - 1
-                );
-                edges.push(edge);
-            }
-        }
-
-        return new Mesh(vertices, edges);
-    }
-}
-/**
- * Works with 3D graphics using wavefront objects as a reference.
+ * Class to work with `HTMLElement` animations. 
+ * Before loading any animation, you need to create one in your `.css` file,
+ * so you can invoke it by name, using the `load()` method.
  * 
- * If you use Blender as editing software 
- * make sure exported `.obj` files have [line elements](https://en.wikipedia.org/wiki/Wavefront_.obj_file#Line_elements).
- * To let Blender properly export your mesh data use `Delete -> 'Only Faces'` in `Edit Mode`.
+ * If you plan to write animations for `ViewportManager`, you need to use it's internal tools.
  * 
- * `ViewportManager` is performant 3D engine, so all of decisions is built following this construct. 
- * There is no animation support or texture draw calls. This engine works with wireframe graphics only,
- * using vanilla [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) methods.
+ * This class is for `HTMLElement` instances only.
  */
-class ViewportManager {
-    constructor(viewport) {
-        this.ctx = viewport.getContext("2d");
-        this.rect = new Rect(
-            viewport.offsetWidth, 
-            viewport.offsetHeight
-        );
-
-        viewport.setAttribute("width",   viewport.offsetWidth);
-        viewport.setAttribute("height", viewport.offsetHeight);
-    }
-
+class AnimationManager {
     /**
-     * Fills canvas with a color specified.
-     * @param {*} color preferred canvas color.
+     * Contains values for `css:animation-timing-function`.
      */
-    #fillRect(color) {
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(0, 0, this.rect.w, this.rect.h);
-    }
-
-    /**
-     * Draws a dot in specified position.
-     * @param {*} color preferred dot color.
-     * @param {*} position position vector as `Vector2`.
-     */
-    #drawDot(color, position) {
-        const scl = 3; // 3
-        this.ctx.fillStyle = color;
-        this.ctx.fillRect(position.x - .5 * scl, position.y - .5 * scl, scl, scl);
-    }
-
-    /**
-     * Draws a line from `beginVector` to `targetVector`.
-     * @param {*} color line color.
-     * @param {*} beginVector start coords as `Vector2`.
-     * @param {*} targetVector destination coords as `Vector2`.
-     */
-    #drawLine(color, beginVector, targetVector) {
-        this.ctx.lineWidth = 3; // 3
-        this.ctx.strokeStyle = color;
-        this.ctx.beginPath();
-        this.ctx.moveTo(beginVector.x, beginVector.y);
-        this.ctx.lineTo(targetVector.x, targetVector.y);
-        this.ctx.stroke();
-    }
-
-    /**
-     * Maps default `-1..1` wavefront coords to canvas related `0..w`.
-     * @param {*} vector a `Vector2` to be mapped.
-     * @returns New `Vector2` object.
-     */
-    #map(vector) {
-        return new Vector2(
-            ((vector.x + 1) / 2) * this.rect.w,
-            (1 - (vector.y + 1) / 2) * this.rect.h
-        );
-    }
-
-    /**
-     * Draws an object with specified flags.
-     * @param {*} mesh `Mesh` object. Use `MeshManager.createMesh()`.
-     * @param {*} color `Color` object.
-     * @param {*} rotation Object rotation vector as `Vector3`.
-     * @param {*} position Object position as `Vector2` [centered at (0, 0) by default].
-     */
-    drawObject(mesh, color, rotation = new Vector3(), position = new Vector2()) {
-        const vertices  = mesh.vertices;
-        const edges     = mesh.edges;
-        const points    = [];
-        
-        this.ctx.clearRect(0, 0, this.rect.w, this.rect.h); // clear screen
-
-        for (const vector3 of vertices) {
-            var vector2 = vector3.toRotation(rotation).toVector2();     // point projection in local coords
-            var point   = this.#map(vector2).add(position);   // point projection in canvas coords
-
-            points.push(point); // add point to a list
-        }
-
-        for (let i = 0; i < points.length; i++) {
-            // draw a vertex (im not sure if it's needed, maybe not.)
-            this.#drawDot(color.toHEX(), points[i]);
-        }
-
-        for (let j = 0; j < edges.length; j++) {
-            const beginVector   = points[ edges[j].begin ];
-            const targetVector  = points[ edges[j].end   ];
-            this.#drawLine(color.toHEX(), beginVector, targetVector);
+    static TimingFunction = {
+        Linear:     "linear",
+        EaseInOut:  "ease-in-out",
+        EaseIn:     "ease-in",
+        EaseOut:    "ease-out",
+        cubicBezier(x1 = 0, y1 = 0, x2 = 1, y2 = 1) {
+            return `cubic-bezier(${x1}, ${y1}, ${x2}, ${y2})`;
         }
     }
-}
-/**
- * Extends `Math` class providing more useful methods to work with.
- */
-class MathHelper {
     /**
-     * Converts radians angle to a degrees one.
-     * @param {*} rad angle value.
-     * @returns angle in degrees.
+     * Contains values for `css:animation-iteration-count`.
      */
-    static toDegrees(rad) {
-        return (180 / Math.PI) * rad;
+    static IterationCount = {
+        Infinite: "infinite"
     }
     /**
-     * Converts degrees angle to a radians one.
-     * @param {*} deg angle value.
-     * @returns angle in radians.
+     * Contains values for `css:animation-fill-mode`.
      */
-    static toRadians(deg) {
-        return (Math.PI / 180) * deg;
+    static FillMode = {
+        Forwards:   "forwards",
+        Backwards:  "backwards"
+    }
+    /**
+     * Contains values for `css:animation-direction`.
+     */
+    static Direction = {
+        Normal:     "normal",
+        Reverse:    "reverse",
+        Alternate:  "alternate"
+    }
+    /**
+     * Invokes the animation on the `element` by properties specified. Replaces existing animation.
+     * @param {*} element           `HTMLElement` reference.
+     * 
+     * @param {*} name              Animation name.
+     * @param {*} duration          Animation duration in `ms`.
+     * @param {*} timingFunction    Animation timing function. Use `TimingFunction` field for this.
+     * @param {*} iterationCount    Animation interation count. 
+     *                              Put a number or use `IterationCount` field to get misc values.
+     * @param {*} fillMode          Animation fill mode. Use `FillMode` field for values.
+     * 
+     * @param {*} direction         Animation direction. Use `Direction` field for values.
+     * 
+     */
+    static load(element, { 
+        name            = "", 
+        duration        = 220, 
+        timingFunction  = this.TimingFunction.EaseInOut, 
+        iterationCount  = 1, 
+        fillMode        = this.FillMode.Forwards, 
+        direction       = this.Direction.Normal
+    })
+    {
+        element.style.animation = "";
+        element.offsetWidth;
+        element.style.animation = `${name} ${duration}ms ${timingFunction} ${iterationCount} ${fillMode} ${direction}`;
     }
 }

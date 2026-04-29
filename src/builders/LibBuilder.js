@@ -12,10 +12,14 @@ export class LibBuilder {
         const buildPath     = "./.build";
         const testsPath     = "./tests";
         const srcPath       = "./src";
-        const commonPath    = "./src/common";
+        const serverPath    = "./src/server";
 
-        const bundleName = "whalelib.js";
-        const testsIncludeFlag = "-ti";
+        const bundleName        = "whalelib.js";
+        const serverFileName    = "server.js";
+
+        const testsIncludeFlag  = "-ti";
+        const serverIncludeFlag = "-si";
+
         // file determines a directory have to be skipped
         // during the bundle process
         const skipFileName = ".skip";
@@ -25,15 +29,32 @@ export class LibBuilder {
 
         console.clear();
 
-        console.log(`Bundling ${bundleName}\n`);
-
         if (!fs.existsSync(srcPath)) {
-            return console.error("[!!!] Source directory cannot be found. Make sure you run this script under root directory of the whalelib's source.\n")
+            return console.error("[!!!] ./src/ directory cannot be found. Make sure you run this script under the root directory of the whalelib's repository.\n")
         }
 
         if (!fs.existsSync(buildPath)) {
             fs.mkdirSync(buildPath);
         }
+        else { // remove old files.
+            const files = fs.readdirSync(buildPath);
+
+            for (var file of files) {
+                try {
+                    fs.unlinkSync(`${buildPath}/${file}`);
+                    console.log(`Removed the old file: <${file}>`);
+                }
+                catch(e) {
+                    console.log(`Cannot remove the old file: <${file}>. Error Message: ${e.message}`);
+                }
+            }
+        }
+
+        console.log();
+
+        console.log(`Bundling <${bundleName}>`);
+        
+        console.log();
 
         /**
          * Recursively check each folder and file in specified directory 
@@ -59,21 +80,36 @@ export class LibBuilder {
 
         console.log();
 
-        const destination       = `${buildPath}/${bundleName}`;
-        const cloneDestination  = `${testsPath}/${bundleName}`;
+        const bundleDest    = `${buildPath}/${bundleName}`;
+        const serverDest    = `${buildPath}/${serverFileName}`;
         
-        fs.writeFileSync(destination, buffer);
+        fs.writeFileSync(bundleDest, buffer);
 
-        if (fs.existsSync(destination)) {
-            console.log(`Bundle saved to ${path.resolve(destination)}`);
+        if (fs.existsSync(bundleDest)) {
+            console.log(`Bundle saved to ${path.resolve(bundleDest)}`);
         }
 
+        // clone server.js file to a build directory
+        if (process.argv.includes(serverIncludeFlag)) {
+            fs.copyFileSync(`${serverPath}/${serverFileName}`, serverDest);
+        }
+
+        if (fs.existsSync(serverDest)) {
+            console.log(`Server saved to ${path.resolve(serverDest)}`);
+        }
+        
+        console.log();
+
+        // clone .build files into tests directory
         if (process.argv.includes(testsIncludeFlag) && fs.existsSync(testsPath)) {
-            fs.copyFileSync(destination, cloneDestination);
+            const files = fs.readdirSync(buildPath);
 
-            if (fs.existsSync(cloneDestination)) {
-                console.log(`Bundle saved to ${path.resolve(cloneDestination)} [${testsIncludeFlag}]`);
-            }
+            files.forEach(file => {
+                console.log(`Attempting to clone <${file}> into ${path.resolve(testsPath)}`);
+                fs.copyFileSync(`${buildPath}/${file}`, `${testsPath}/${file}`);
+            });
         }
+
+        console.log();
     }
 }

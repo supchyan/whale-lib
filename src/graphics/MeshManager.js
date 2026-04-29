@@ -1,5 +1,5 @@
 /**
- * Works with meshes data.
+ * Manages `Mesh` objects.
  */
 class MeshManager {
     /**

@@ -1,5 +1,5 @@
 /**
- * Extends `Math` class providing more useful methods to work with.
+ * Useful methods in addiction to the `Math` class.
  */
 class MathHelper {
     /**
@@ -8,7 +8,7 @@ class MathHelper {
      * @returns angle in degrees.
      */
     static toDegrees(rad) {
-        return (180 / Math.PI) * rad;
+        return (180 / this.PI) * rad;
     }
     /**
      * Converts degrees angle to a radians one.
@@ -16,6 +16,6 @@ class MathHelper {
      * @returns angle in radians.
      */
     static toRadians(deg) {
-        return (Math.PI / 180) * deg;
+        return (this.PI / 180) * deg;
     }
 }
