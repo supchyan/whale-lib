@@ -10,6 +10,7 @@
         <div id="updateScene"></div>
         <div id="animationScene"></div>
         <div id="graphicsScene"></div>
+        <div id="textEngineScene"></div>
     </div>
     <div class="centered" id="bottomBar">
         <div class="centered" id="nextButton">next</div>
@@ -60,6 +61,7 @@
 
     // define scenes
     const scenes = [
+        new Scene(document.getElementById("textEngineScene")).load("./scns/textengine_scene"),
         new Scene(document.getElementById("updateScene")).load("./scns/update_scene"),
         new Scene(document.getElementById("animationScene")).load("./scns/animation_scene"),
         new Scene(document.getElementById("graphicsScene")).load("./scns/graphics_scene"),
@@ -74,7 +76,7 @@
 
     function updateVisibility(n) {
         for (var i = 0; i < scenes.length; i++) {
-            i == n ? scenes[i].show() : scenes[i].collapse()
+            i == n ? scenes[i].show() : scenes[i].hide()
         }
 
         // draw current scene id

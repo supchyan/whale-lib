@@ -10,15 +10,42 @@
  * using vanilla [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) methods.
  */
 class ViewportManager {
-    constructor(viewport) {
-        this.ctx = viewport.getContext("2d");
-        this.rect = new Rect(
-            viewport.offsetWidth, 
-            viewport.offsetHeight
-        );
+    /**
+     * @param {*} ref **DO NOT** create instance manually!
+     *                Use `ViewportManager.getInstanceOf(canvasElement)` instead. 
+     */
+    constructor(ref) {
+        if (!ViewportManager.#isUsingFactory) {
+            throw new Error("You have to access the class instance using `ViewportManager.instanceOf()`.");
+        }
 
-        viewport.setAttribute("width",   viewport.offsetWidth);
-        viewport.setAttribute("height", viewport.offsetHeight);
+        ref.width  = ref.offsetWidth;
+        ref.height = ref.offsetHeight;
+
+        this.rect = new Rect(ref.offsetWidth, ref.offsetHeight);
+        this.ctx = ref.getContext("2d");
+    }
+    
+    /**
+     * True whenever the class instance can be created.
+     */
+    static #isUsingFactory = false;
+
+    /**
+     * Returns a new instance of `ViewportManager` by a `canvasElement` element specified.
+     * 
+     * You may call this every time before drawing any objects, using the `ViewportManager` class.
+     * @param {*} canvasElement canvas element reference.
+     * @returns a new `ViewportManager` object.
+     */
+    static instanceOf(canvasElement) {
+        // enable an instance creation
+        ViewportManager.#isUsingFactory = true;
+        var vm = new ViewportManager(canvasElement);
+        // disable an instance creation
+        ViewportManager.#isUsingFactory = false;
+
+        return vm;
     }
 
     /**

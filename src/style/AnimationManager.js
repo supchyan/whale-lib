@@ -47,17 +47,17 @@ class AnimationManager {
      * 
      * @param {*} name              Animation name.
      * @param {*} duration          Animation duration in `ms`.
+     * @param {*} delay             Animation delay in `ms`.
      * @param {*} timingFunction    Animation timing function. Use `TimingFunction` field for this.
      * @param {*} iterationCount    Animation interation count. 
      *                              Put a number or use `IterationCount` field to get misc values.
      * @param {*} fillMode          Animation fill mode. Use `FillMode` field for values.
-     * 
      * @param {*} direction         Animation direction. Use `Direction` field for values.
-     * 
      */
     static load(element, { 
         name            = "", 
-        duration        = 220, 
+        duration        = 220,
+        delay           = 0,
         timingFunction  = this.TimingFunction.EaseInOut, 
         iterationCount  = 1, 
         fillMode        = this.FillMode.Forwards, 
@@ -66,6 +66,14 @@ class AnimationManager {
     {
         element.style.animation = "";
         element.offsetWidth;
-        element.style.animation = `${name} ${duration}ms ${timingFunction} ${iterationCount} ${fillMode} ${direction}`;
+        element.style.animation = `${name} ${duration}ms ${delay}ms ${timingFunction} ${iterationCount} ${fillMode} ${direction}`;
+    }
+    /**
+     * Unloads specified element animation.
+     * @param {*} element `HTMLElement` reference.
+     */
+    static unload(element) {
+        element.style.animation = "";
+        element.offsetWidth;
     }
 }

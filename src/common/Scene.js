@@ -62,26 +62,26 @@ class Scene {
     }
 
     /**
-     * `true` whenever the scene is collapsed.
+     * `true` whenever the scene is hidden.
      */
-    isCollapsed() {
-        return this.root.style.visibility == "collapse";
+    isHidden() {
+        return this.root.style.display == "none";
     }
 
     /**
-     * Collapses (hides) current scene. 
+     * Hides current scene. 
      * Pauses `update()` method execution.
      */
-    collapse() {
-        this.root.style.visibility = "collapse";
+    hide() {
+        this.root.style.display = "none";
     }
 
     /**
-     * Shows current scene if was collapsed previously. 
+     * Shows current scene if was hidden previously. 
      * Resumes `update()` method execution.
      */
     show() {
-        this.root.style.visibility = "unset";
+        this.root.style.display = "block";
     }
 
     /**
@@ -140,8 +140,8 @@ class Scene {
         if (!this.root) return this;
 
         if (!this.isEmpty()) {
-            // skip loop content while scene is loaded, but collapsed
-            if (!this.isCollapsed()) {
+            // skip loop content while scene is loaded, but hidden
+            if (!this.isHidden()) {
                 _void();
             }
             setTimeout(() => { this.update(_void) }, 1);

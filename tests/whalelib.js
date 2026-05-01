@@ -240,26 +240,26 @@ class Scene {
     }
 
     /**
-     * `true` whenever the scene is collapsed.
+     * `true` whenever the scene is hidden.
      */
-    isCollapsed() {
-        return this.root.style.visibility == "collapse";
+    isHidden() {
+        return this.root.style.display == "none";
     }
 
     /**
-     * Collapses (hides) current scene. 
+     * Hides current scene. 
      * Pauses `update()` method execution.
      */
-    collapse() {
-        this.root.style.visibility = "collapse";
+    hide() {
+        this.root.style.display = "none";
     }
 
     /**
-     * Shows current scene if was collapsed previously. 
+     * Shows current scene if was hidden previously. 
      * Resumes `update()` method execution.
      */
     show() {
-        this.root.style.visibility = "unset";
+        this.root.style.display = "block";
     }
 
     /**
@@ -318,8 +318,8 @@ class Scene {
         if (!this.root) return this;
 
         if (!this.isEmpty()) {
-            // skip loop content while scene is loaded, but collapsed
-            if (!this.isCollapsed()) {
+            // skip loop content while scene is loaded, but hidden
+            if (!this.isHidden()) {
                 _void();
             }
             setTimeout(() => { this.update(_void) }, 1);
@@ -435,15 +435,42 @@ class MeshManager {
  * using vanilla [Canvas API](https://developer.mozilla.org/en-US/docs/Web/API/Canvas_API) methods.
  */
 class ViewportManager {
-    constructor(viewport) {
-        this.ctx = viewport.getContext("2d");
-        this.rect = new Rect(
-            viewport.offsetWidth, 
-            viewport.offsetHeight
-        );
+    /**
+     * @param {*} ref **DO NOT** create instance manually!
+     *                Use `ViewportManager.getInstanceOf(canvasElement)` instead. 
+     */
+    constructor(ref) {
+        if (!ViewportManager.#isUsingFactory) {
+            throw new Error("You have to access the class instance using `ViewportManager.instanceOf()`.");
+        }
 
-        viewport.setAttribute("width",   viewport.offsetWidth);
-        viewport.setAttribute("height", viewport.offsetHeight);
+        ref.width  = ref.offsetWidth;
+        ref.height = ref.offsetHeight;
+
+        this.rect = new Rect(ref.offsetWidth, ref.offsetHeight);
+        this.ctx = ref.getContext("2d");
+    }
+    
+    /**
+     * True whenever the class instance can be created.
+     */
+    static #isUsingFactory = false;
+
+    /**
+     * Returns a new instance of `ViewportManager` by a `canvasElement` element specified.
+     * 
+     * You may call this every time before drawing any objects, using the `ViewportManager` class.
+     * @param {*} canvasElement canvas element reference.
+     * @returns a new `ViewportManager` object.
+     */
+    static instanceOf(canvasElement) {
+        // enable an instance creation
+        ViewportManager.#isUsingFactory = true;
+        var vm = new ViewportManager(canvasElement);
+        // disable an instance creation
+        ViewportManager.#isUsingFactory = false;
+
+        return vm;
     }
 
     /**
@@ -764,17 +791,17 @@ class AnimationManager {
      * 
      * @param {*} name              Animation name.
      * @param {*} duration          Animation duration in `ms`.
+     * @param {*} delay             Animation delay in `ms`.
      * @param {*} timingFunction    Animation timing function. Use `TimingFunction` field for this.
      * @param {*} iterationCount    Animation interation count. 
      *                              Put a number or use `IterationCount` field to get misc values.
      * @param {*} fillMode          Animation fill mode. Use `FillMode` field for values.
-     * 
      * @param {*} direction         Animation direction. Use `Direction` field for values.
-     * 
      */
     static load(element, { 
         name            = "", 
-        duration        = 220, 
+        duration        = 220,
+        delay           = 0,
         timingFunction  = this.TimingFunction.EaseInOut, 
         iterationCount  = 1, 
         fillMode        = this.FillMode.Forwards, 
@@ -783,6 +810,141 @@ class AnimationManager {
     {
         element.style.animation = "";
         element.offsetWidth;
-        element.style.animation = `${name} ${duration}ms ${timingFunction} ${iterationCount} ${fillMode} ${direction}`;
+        element.style.animation = `${name} ${duration}ms ${delay}ms ${timingFunction} ${iterationCount} ${fillMode} ${direction}`;
+    }
+    /**
+     * Unloads specified element animation.
+     * @param {*} element `HTMLElement` reference.
+     */
+    static unload(element) {
+        element.style.animation = "";
+        element.offsetWidth;
+    }
+}
+/**
+ * Text element structure.
+ */
+class TextElement {
+    constructor(ref) {
+        this.text = ref.innerHTML;
+        this.node = ref;
+    }
+}
+/**
+ * Modifies text containers, turning them ***special***.
+ * 
+ * It's desgined for letter characters, so won't work with emoji.
+ */
+class TextEngine {
+    /**
+     * Turns the text with a ***rainbow***.
+     * @param {*} textElement a `TextElement` reference. 
+     * 
+     * @param {*} duration  an animation duration.
+     * @param {*} amplitude an animation wave amplitude.
+     * @param {*} period    an animation wave period.
+     */
+    static rainbowText(textElement, {duration = 1000, amplitude = 0.2, period = 0.5 } = {}) {
+        // clean the root
+        textElement.node.innerHTML = "";
+        textElement.node.offsetWidth;
+        textElement.node.setAttribute("style", "display: flex; flex-direction: row; white-space: pre;");
+
+        // fill element node with chars of original text
+        // but as independent containers
+        for(var i = 0; i < textElement.text.length; i++) {
+            // returns a hue value, depending on char index
+            function hue(deg) {
+                return `hsl(${10 * i + deg},100%,50%)`;
+            }
+            // returns a translate value, depending on char index
+            function translate(value) { // 2 * value * PI => 0 ... 2PI
+                return `translateY(${amplitude * Math.cos((1 - period * i) + 2 * value * Math.PI)}rem)`;
+            }
+
+            const keyframes = [
+                { color: hue(0),   transform: translate(0.00) },
+                { color: hue(45),  transform: translate(.125) },
+                { color: hue(90),  transform: translate(.250) },
+                { color: hue(135), transform: translate(.375) },
+                { color: hue(180), transform: translate(0.50) },
+                { color: hue(225), transform: translate(.625) },
+                { color: hue(270), transform: translate(.750) },
+                { color: hue(315), transform: translate(.875) },
+                { color: hue(360), transform: translate(1.00) },
+            ];
+
+            const options = {
+                duration: duration,
+                iterations: Infinity,
+                easing: AnimationManager.TimingFunction.Linear
+            };
+
+            const cElement = document.createElement("div");
+
+            cElement.innerHTML = textElement.text[i];
+            cElement.animate(keyframes, options);
+
+            textElement.node.appendChild(cElement);
+        }
+    }
+    /**
+     * Turns the text with a ***tremor***.
+     * @param {*} textElement a `TextElement` reference. 
+     * 
+     * @param {*} duration  an animation duration.
+     * @param {*} strength  an animation tremor strength.
+     */
+    static tremorText(textElement, {duration = 80, strength = .4 } = {}) {
+        // clean the root
+        textElement.node.innerHTML = "";
+        textElement.node.offsetWidth;
+        textElement.node.setAttribute("style", "display: flex; flex-direction: row; white-space: pre;");
+
+        // fill element node with chars of original text
+        // but as independent containers
+        for(var i = 0; i < textElement.text.length; i++) {
+            // returns a translate value, depending on char index
+            function translate(value) { // 2 * value * PI => 0 ... 2PI
+                var offset = i % 2 ? Math.cos(i + 2*value * Math.PI) :
+                                     Math.sin(i + 2*value * Math.PI);
+
+                return `scale(${1 + strength * .2 * offset}) 
+                        rotate(${strength * 10 * offset}deg)`;
+            }
+
+            const keyframes = [
+                { transform: translate(0.00) },
+                { transform: translate(.125) },
+                { transform: translate(.250) },
+                { transform: translate(.375) },
+                { transform: translate(0.50) },
+                { transform: translate(.625) },
+                { transform: translate(.750) },
+                { transform: translate(.875) },
+                { transform: translate(1.00) },
+            ];
+
+            const options = {
+                duration: duration,
+                iterations: Infinity,
+                easing: AnimationManager.TimingFunction.Linear
+            };
+
+            const cElement = document.createElement("div");
+
+            cElement.innerHTML = textElement.text[i];
+            cElement.animate(keyframes, options);
+
+            textElement.node.appendChild(cElement);
+        }
+    }
+    /**
+     * Clears text effects.
+     * @param {*} textElement a `TextElement` reference. 
+     */
+    static clear(textElement) {
+        textElement.node.innerHtml = textElement.text;
+        textElement.node.offsetWidth;
     }
 }
