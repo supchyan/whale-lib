@@ -112,7 +112,8 @@ class TextEngine {
      * @param {*} textElement a `TextElement` reference. 
      */
     static clear(textElement) {
-        textElement.node.innerHtml = textElement.text;
+        textElement.node.innerHTML = textElement.text;
         textElement.node.offsetWidth;
+        textElement.node.removeAttribute("style");
     }
 }
