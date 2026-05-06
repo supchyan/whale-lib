@@ -12,3 +12,29 @@
     font-weight: bold;
     font-family: "Arial";
 }
+.circleElement {
+    left: 0;
+    top: 0;
+
+    position: absolute;
+
+    pointer-events: none;
+
+    width: 4rem;
+    height: 4rem;
+
+    border-radius: 100%;
+}
+#circleElementLerp {
+    background-color: lime;
+    outline: solid .2rem white; 
+    animation: hue 1s infinite linear;
+}
+#circleElementVanilla {
+    background-color: red;
+    
+    transition: 100ms ease-in-out;
+}
+#circleElementInstant {
+    background-color: blue;
+}

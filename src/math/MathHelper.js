@@ -18,4 +18,12 @@ class MathHelper {
     static toRadians(deg) {
         return (this.PI / 180) * deg;
     }
+    /**
+     * Emulates FNA's `Vector2.Lerp()`, but for numeric values.
+     * Put this in update method to make smooth transition 
+     * between `from` and `to` values with a `weight` specified.
+     */
+    static Lerp(from, to, weight) {
+        return from + (to - from) * weight;
+    }
 }
