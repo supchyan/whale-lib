@@ -1,4 +1,4 @@
-<img src="icon.svg" width="64">
+<img src="icon.svg" width="32">
 
 ```
 My general-purpose frontend library for web applications.
